@@ -1,7 +1,9 @@
 package diploma.storytime.stolbysassistant.recycler;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,9 +16,10 @@ import java.util.List;
 
 import diploma.storytime.stolbysassistant.R;
 
-public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHolder> {
     private List<RecyclerItem> values = new ArrayList<RecyclerItem>();
     private final Context context;
+    private static ClickListener clickListener;
 
     public RecyclerAdapter(Context context) {
         this.context = context;
@@ -28,7 +31,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int i) {
+    public RecyclerAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int i) {
         View view = LayoutInflater.from(parent.getContext()).inflate(
                         R.layout.layout_list_item, parent, false);
 
@@ -36,8 +39,13 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
+    public void onBindViewHolder(@NonNull RecyclerAdapter.ViewHolder holder, int i) {
+        RecyclerItem detailItem = values.get(i);
+        ViewHolder viewHolder = (ViewHolder) holder;
 
+        viewHolder.imageView.setImageDrawable(ContextCompat.getDrawable(context, detailItem.getImageUrl()));
+        viewHolder.titleTextView.setText(context.getString(detailItem.getTitle()));
+        viewHolder.descriptionTextView.setText(context.getString(detailItem.getDescription()));
     }
 
     @Override
@@ -45,7 +53,16 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         return values.size();
     }
 
-    static class ViewHolder extends RecyclerView.ViewHolder {
+    public void setOnItemClickListener(ClickListener clickListener) {
+        clickListener = clickListener;
+    }
+
+    public interface ClickListener {
+        void onItemClick(int position, View v);
+        void onItemLongClick(int position, View v);
+    }
+
+    static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
 
         TextView titleTextView;
         TextView descriptionTextView;
@@ -60,6 +77,16 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             descriptionTextView = itemView.findViewById(R.id.description);
             newIconImageView = itemView.findViewById(R.id.icon_image_view);
         }
-    }
 
+        @Override
+        public void onClick(View v) {
+            clickListener.onItemClick(getAdapterPosition(), v);
+        }
+
+        @Override
+        public boolean onLongClick(View v) {
+            clickListener.onItemLongClick(getAdapterPosition(), v);
+            return false;
+        }
+    }
 }

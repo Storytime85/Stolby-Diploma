@@ -1,49 +1,38 @@
 package diploma.storytime.stolbysassistant.views;
 
+import android.app.Fragment;
 import android.app.FragmentTransaction;
-import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-
-import com.mapbox.android.core.BuildConfig;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import diploma.storytime.stolbysassistant.fragments.CameraFragment;
 import diploma.storytime.stolbysassistant.fragments.CompassFragment;
 import diploma.storytime.stolbysassistant.fragments.LoginFragment;
+import diploma.storytime.stolbysassistant.fragments.MainFragment;
 import diploma.storytime.stolbysassistant.fragments.MapFragment;
 import diploma.storytime.stolbysassistant.fragments.PillarsFragment;
-import diploma.storytime.stolbysassistant.fragments.SettingsFragment;
 import diploma.storytime.stolbysassistant.R;
-import diploma.storytime.stolbysassistant.recycler.RecyclerAdapter;
-import diploma.storytime.stolbysassistant.recycler.RecyclerItem;
-import diploma.storytime.stolbysassistant.recycler.RecyclerItemClickListener;
+
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    MainFragment mainFragment = new MainFragment();
     MapFragment mapFragment = new MapFragment();
-    LoginFragment loginActivity = new LoginFragment();
-    SettingsFragment settingsActivity = new SettingsFragment();
+    LoginFragment loginFragment = new LoginFragment();
+    SettingsFragment settingsFragment = new SettingsFragment();
     CompassFragment compassFragment = new CompassFragment();
     PillarsFragment pillarsFragment = new PillarsFragment();
     CameraFragment cameraFragment = new CameraFragment();
 
-    RecyclerAdapter adapter = new RecyclerAdapter(this);
-    ArrayList<RecyclerItem> items = new ArrayList<>();
-    RecyclerView recycler;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,30 +40,11 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        initializeModels();
-        recycler = findViewById(R.id.recyclerView);
-        adapter.setDataSet(items);
-        if (recycler != null) {
-            recycler.setHasFixedSize(true);
-            recycler.setLayoutManager(new LinearLayoutManager(this));
-            recycler.setAdapter(adapter);
-        }
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
-        recycler.addOnItemTouchListener(
-                new RecyclerItemClickListener(this, recycler ,new RecyclerItemClickListener.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(View view, int position) {
-                        // do whatever
-                    }
+        transaction.add(R.id.main_content, mainFragment);
 
-                    @Override
-                    public void onLongItemClick(View view, int position) {
-                        // do whatever
-                    }
-                })
-        );
-
-
+        transaction.commit();
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -119,75 +89,36 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-
-        if (id == R.id.nav_camera) {
-            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-
-            fragmentTransaction.replace(R.id.main_content, cameraFragment);
-
-            fragmentTransaction.commit();
+        if(id == R.id.nav_main){
+            changeFragment(mainFragment);
+        }else if (id == R.id.nav_camera) {
+            changeFragment(cameraFragment);
         } else if (id == R.id.nav_map) {
-            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-
-            fragmentTransaction.replace(R.id.main_content, mapFragment);
-
-            fragmentTransaction.commit();
+            changeFragment(mapFragment);
         } else if (id == R.id.nav_compass) {
-            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-
-            fragmentTransaction.replace(R.id.main_content, compassFragment);
-
-            fragmentTransaction.commit();
+            changeFragment(compassFragment);
         } else if (id == R.id.nav_stolby) {
-            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-
-            fragmentTransaction.replace(R.id.main_content, pillarsFragment);
-
-            fragmentTransaction.commit();
+            changeFragment(pillarsFragment);
         } else if (id == R.id.nav_settings) {
-            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-
-            fragmentTransaction.replace(R.id.main_content, settingsActivity);
-
-            fragmentTransaction.commit();
+            changeFragment(settingsFragment);
         } else if (id == R.id.nav_login){
-            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-
-            fragmentTransaction.replace(R.id.main_content, loginActivity);
-
-            fragmentTransaction.commit();
+            changeFragment(loginFragment);
         }
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
-    private void initializeModels(){
-        //RecyclerItem(int title, int description, Intent javaActivity,
-        //                        int imageUrl)
-        items.add(new RecyclerItem(
-                R.string.map_title,
-                R.string.map_description,
-                new Intent(MainActivity.this, MainActivity.class),
-                null));
-        items.add(new RecyclerItem(
-                R.string.ar_title,
-                R.string.ar_description,
-                new Intent(MainActivity.this, MainActivity.class),
-                null));
-        items.add(new RecyclerItem(
-                R.string.compass_title,
-                R.string.compass_description,
-                new Intent(MainActivity.this, MainActivity.class),
-                null));
-        items.add(new RecyclerItem(
-                R.string.pillars_title,
-                R.string.pillars_description,
-                new Intent(MainActivity.this, MainActivity.class),
-                null));
+    private void changeFragment(Fragment fragment){
+        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+
+        fragmentTransaction.replace(R.id.main_content, fragment);
+        fragmentTransaction.addToBackStack(null);
+
+        fragmentTransaction.commit();
     }
 
 }

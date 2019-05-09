@@ -22,10 +22,10 @@ import diploma.storytime.stolbysassistant.views.MainActivity;
 public class CompassFragment extends Fragment implements SensorEventListener {
     private MainActivity activity;
 
-    private ImageView HeaderImage;
-    private float RotateDegree = 0f;
-    private SensorManager mSensorManager;
-    TextView CompOrient;
+    private ImageView headerImage;
+    private float rotateDegree = 0f;
+    private SensorManager sensorManager;
+    TextView orientText;
 
     @Override
     public void onAttach(Context context) {
@@ -40,9 +40,9 @@ public class CompassFragment extends Fragment implements SensorEventListener {
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        HeaderImage = view.findViewById(R.id.imageViewCompass);
-        CompOrient = view.findViewById(R.id.tvHeading);
-        mSensorManager = (SensorManager) activity.getSystemService(Context.SENSOR_SERVICE);
+        headerImage = view.findViewById(R.id.imageViewCompass);
+        orientText = view.findViewById(R.id.tvHeading);
+        sensorManager = (SensorManager) activity.getSystemService(Context.SENSOR_SERVICE);
     }
 
     @Override
@@ -53,14 +53,14 @@ public class CompassFragment extends Fragment implements SensorEventListener {
     @Override
     public void onResume() {
         super.onResume();
-        mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION),
+        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION),
                 SensorManager.SENSOR_DELAY_GAME);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        mSensorManager.unregisterListener(this);
+        sensorManager.unregisterListener(this);
     }
 
     @Override
@@ -72,10 +72,10 @@ public class CompassFragment extends Fragment implements SensorEventListener {
         } else {
             degrees = Float.toString(degree);
         }
-        CompOrient.setText(getString(R.string.north_deviation)+ " " + degrees + " " + getString(R.string.degrees));
+        orientText.setText(degrees + "°" );
 
         RotateAnimation rotateAnimation = new RotateAnimation(
-                RotateDegree,
+                rotateDegree,
                 -degree,
                 Animation.RELATIVE_TO_SELF, 0.5f,
                 Animation.RELATIVE_TO_SELF,
@@ -83,8 +83,8 @@ public class CompassFragment extends Fragment implements SensorEventListener {
         rotateAnimation.setDuration(200);
         rotateAnimation.setFillAfter(true);
 
-        HeaderImage.startAnimation(rotateAnimation);
-        RotateDegree = -degree;
+        headerImage.startAnimation(rotateAnimation);
+        rotateDegree = -degree;
     }
 
     @Override
