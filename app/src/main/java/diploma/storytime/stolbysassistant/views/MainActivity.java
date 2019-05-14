@@ -1,17 +1,28 @@
 package diploma.storytime.stolbysassistant.views;
 
-import android.app.Fragment;
-import android.app.FragmentTransaction;
+//import android.app.Fragment;
+//import android.app.FragmentTransaction;
+//import android.os.Bundle;
+//import android.view.Menu;
+//import android.view.MenuItem;
+
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+
+import com.google.android.material.navigation.NavigationView;
 
 import diploma.storytime.stolbysassistant.fragments.CameraFragment;
 import diploma.storytime.stolbysassistant.fragments.CompassFragment;
@@ -20,31 +31,59 @@ import diploma.storytime.stolbysassistant.fragments.MainFragment;
 import diploma.storytime.stolbysassistant.fragments.MapFragment;
 import diploma.storytime.stolbysassistant.fragments.PillarsFragment;
 import diploma.storytime.stolbysassistant.R;
+import diploma.storytime.stolbysassistant.utils.FragmentChanger;
 
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    MainFragment mainFragment = new MainFragment();
-    MapFragment mapFragment = new MapFragment();
-    LoginFragment loginFragment = new LoginFragment();
-    SettingsFragment settingsFragment = new SettingsFragment();
-    CompassFragment compassFragment = new CompassFragment();
-    PillarsFragment pillarsFragment = new PillarsFragment();
-    CameraFragment cameraFragment = new CameraFragment();
+    //@BindView(R.id.user_email)
+    public TextView emailTextView;
+
+    //@BindView(R.id.user_name)
+    public TextView userNameTextView;
+
+    //@BindView(R.id.userImageView)
+    public ImageView imageView;
+
+    public ImageView getImageView() {
+        return imageView;
+    }
+
+    public void setImageView(ImageView imageView) {
+        this.imageView = imageView;
+    }
+
+    public TextView getEmailTextView() {
+        return emailTextView;
+    }
+
+    public void setEmailTextView(TextView emailTextView) {
+        this.emailTextView = emailTextView;
+    }
+
+    public TextView getUserNameTextView() {
+        return userNameTextView;
+    }
+
+    public void setUserNameTextView(TextView userNameTextView) {
+        this.userNameTextView = userNameTextView;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //ButterKnife.bind(this);
         setContentView(R.layout.activity_main);
+
+        emailTextView = (TextView) findViewById(R.id.user_email);
+        userNameTextView = findViewById(R.id.user_name);
+        imageView = findViewById(R.id.userImageView);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
         setSupportActionBar(toolbar);
 
-        FragmentTransaction transaction = getFragmentManager().beginTransaction();
-
-        transaction.add(R.id.main_content, mainFragment);
-
-        transaction.commit();
+        FragmentChanger.changeFragment(new MainFragment(),this);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -93,32 +132,24 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
         if(id == R.id.nav_main){
-            changeFragment(mainFragment);
+            FragmentChanger.changeFragment(new MainFragment(),this);
         }else if (id == R.id.nav_camera) {
-            changeFragment(cameraFragment);
+            FragmentChanger.changeFragment(new CameraFragment(),this);
         } else if (id == R.id.nav_map) {
-            changeFragment(mapFragment);
+            FragmentChanger.changeFragment(new MapFragment(),this);
         } else if (id == R.id.nav_compass) {
-            changeFragment(compassFragment);
+            FragmentChanger.changeFragment(new CompassFragment(),this);
         } else if (id == R.id.nav_stolby) {
-            changeFragment(pillarsFragment);
+            FragmentChanger.changeFragment(new PillarsFragment(),this);
         } else if (id == R.id.nav_settings) {
-            changeFragment(settingsFragment);
+
+            //changeFragment(settingsFragment);
+
         } else if (id == R.id.nav_login){
-            changeFragment(loginFragment);
+            FragmentChanger.changeFragment(new LoginFragment(),this);
         }
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-
-    private void changeFragment(Fragment fragment){
-        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-
-        fragmentTransaction.replace(R.id.main_content, fragment);
-        fragmentTransaction.addToBackStack(null);
-
-        fragmentTransaction.commit();
-    }
-
 }

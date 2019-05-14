@@ -4,11 +4,11 @@ android {
     compileSdkVersion 28
     defaultConfig {
         applicationId "diploma.storytime.stolbysassistant"
-        minSdkVersion 21
+        minSdkVersion 23
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        //testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
@@ -16,6 +16,16 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    compileOptions {
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
+    }
+    buildToolsVersion = '29.0.0 rc2'
+//    packagingOptions {
+//        duplicatesStrategy = 'exclude'
+//        exclude group: 'org.hamcrest'
+//
+//    }
 }
 
 dependencies {
@@ -25,15 +35,37 @@ dependencies {
     implementation 'com.android.support:design:28.0.0'
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
 
-    implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:7.3.2'
+    implementation 'org.osmdroid:osmdroid-android:6.1.0'
 
-    implementation 'com.jakewharton.timber:timber:4.7.1'
-
-
+//    implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:7.3.2'
     implementation 'androidx.preference:preference:1.1.0-alpha05'
-    testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation 'com.google.android.gms:play-services-maps:16.1.0'
     implementation 'com.android.support:recyclerview-v7:28.0.0'
+
+    implementation "com.mikepenz:materialdrawer:6.1.1"
+
+    implementation "androidx.appcompat:appcompat:1.0.2"
+    implementation 'androidx.recyclerview:recyclerview:1.1.0-alpha05'
+    implementation "androidx.annotation:annotation:1.0.2"
+    implementation "com.google.android.material:material:1.0.0"
+    implementation "androidx.constraintlayout:constraintlayout:2.0.0-beta1"
+
+//    implementation 'com.jakewharton:butterknife:10.1.0'
+//    annotationProcessor 'com.jakewharton:butterknife-compiler:10.1.0'
+
+    implementation group: 'com.parse', name: 'parse-android', version: '1.17.3'
+
+    // https://mvnrepository.com/artifact/mysql/mysql-connector-java
+    implementation group: 'mysql', name: 'mysql-connector-java', version: '8.0.16'
+
+
+    implementation('com.googlecode.json-simple:json-simple:1.1.1') {
+        exclude group: 'org.hamcrest', module: 'hamcrest-core'
+    }
+    //implementation 'org.jetbrains:annotations:15.0'
+
 }
+
+

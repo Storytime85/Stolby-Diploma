@@ -3,8 +3,7 @@ package diploma.storytime.stolbysassistant.fragments;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
-
-import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,20 +15,23 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-//import butterknife.BindView;
+import com.parse.ParseUser;
+
 //import butterknife.ButterKnife;
+//import butterknife.BindView;
 import diploma.storytime.stolbysassistant.R;
 import diploma.storytime.stolbysassistant.utils.FragmentChanger;
 import diploma.storytime.stolbysassistant.utils.UserChanger;
 import diploma.storytime.stolbysassistant.views.MainActivity;
 
-import com.parse.ParseUser;
-
 import static android.app.Activity.RESULT_OK;
 
-public class LoginFragment extends Fragment {
+public class SignupFragment extends Fragment {
+    private static final String TAG = "SignupActivity";
     private MainActivity activity;
-    private static final int REQUEST_SIGNUP = 0;
+
+    //@BindView(R.id.input_name)
+    EditText nameText;
 
     //@BindView(R.id.input_email)
     EditText emailText;
@@ -37,12 +39,11 @@ public class LoginFragment extends Fragment {
     //@BindView(R.id.input_password)
     EditText passwordText;
 
-    //@BindView(R.id.btn_login)
-    Button loginButton;
+    //@BindView(R.id.btn_signup)
+    Button signupButton;
 
-    //@BindView(R.id.link_signup)
-    TextView signupLink;
-
+    //@BindView(R.id.link_login)
+    TextView loginLink;
 
     @Override
     public void onAttach(Context context) {
@@ -52,91 +53,87 @@ public class LoginFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.content_login, container, false);
+        return inflater.inflate(R.layout.content_signup, container, false);
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         //ButterKnife.bind(activity);
     }
+
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState){
+        nameText = activity.findViewById(R.id.input_name);
         emailText = activity.findViewById(R.id.input_email);
         passwordText = activity.findViewById(R.id.input_password);
-        loginButton = activity.findViewById(R.id.btn_login);
-        signupLink = activity.findViewById(R.id.link_signup);
+        signupButton = activity.findViewById(R.id.btn_signup);
+        loginLink = activity.findViewById(R.id.link_login);
 
-        loginButton.setOnClickListener(v -> login());
+        signupButton.setOnClickListener(v -> signup());
 
-        signupLink.setOnClickListener(v -> {
-            // Start the Signup activity
-            FragmentChanger.changeFragment(new SignupFragment(), activity);
+        loginLink.setOnClickListener(v -> {
+            FragmentChanger.changeFragment(new LoginFragment(),activity);
         });
     }
 
-    private void login() {
+    private void signup() {
+
         if (!validate()) {
-            onLoginFailed();
+            onSignupFailed();
             return;
         }
 
-        loginButton.setEnabled(false);
+        signupButton.setEnabled(false);
 
         final ProgressDialog progressDialog = new ProgressDialog(activity);
         progressDialog.setIndeterminate(true);
-        progressDialog.setMessage("Authenticating...");
+        progressDialog.setMessage("Creating Account...");
         progressDialog.show();
 
+        String name = nameText.getText().toString();
         String email = emailText.getText().toString();
         String password = passwordText.getText().toString();
 
-        // TODO: Implement your own authentication logic here.
-        if (ParseUser.getCurrentUser() != null) {
-            UserChanger.loginUser(password,email,activity);
-        } else {
-            ParseUser.logOut();
-        }
+        // TODO: Implement your own signup logic here.
+        UserChanger.signupUser(name,password,email,activity);
         new android.os.Handler().postDelayed(
                 () -> {
-                    // On complete call either onLoginSuccess or onLoginFailed
-                    onLoginSuccess();
-                    // onLoginFailed();
+                    // On complete call either onSignupSuccess or onSignupFailed
+                    // depending on success
+                    onSignupSuccess();
+                    // onSignupFailed();
                     progressDialog.dismiss();
                 }, 3000);
     }
 
 
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_SIGNUP) {
-            if (resultCode == RESULT_OK) {
-
-                // TODO: Implement successful signup logic here
-                // By default we just finish the Activity and log them in automatically
-                // activity.finish();
-            }
-        }
-    }
-
-
-    private void onLoginSuccess() {
-        loginButton.setEnabled(true);
+    private void onSignupSuccess() {
+        signupButton.setEnabled(true);
+        activity.setResult(RESULT_OK, null);
         //activity.finish();
     }
 
-    private void onLoginFailed() {
+    private void onSignupFailed() {
         Toast.makeText(activity.getBaseContext(), "Login failed", Toast.LENGTH_LONG).show();
 
-        loginButton.setEnabled(true);
+        signupButton.setEnabled(true);
     }
 
     private boolean validate() {
         boolean valid = true;
 
+        String name = nameText.getText().toString();
         String email = emailText.getText().toString();
         String password = passwordText.getText().toString();
+
+        if (name.isEmpty() || name.length() < 3) {
+            nameText.setError("at least 3 characters");
+            valid = false;
+        } else {
+            nameText.setError(null);
+        }
 
         if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             emailText.setError("enter a valid email address");

@@ -1,47 +1,71 @@
 package diploma.storytime.stolbysassistant.fragments;
 
-import android.app.Fragment;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+
 import android.content.Context;
 import android.content.Intent;
-import android.hardware.SensorManager;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.ArrayList;
 
-import diploma.storytime.stolbysassistant.BuildConfig;
 import diploma.storytime.stolbysassistant.R;
 import diploma.storytime.stolbysassistant.recycler.RecyclerAdapter;
 import diploma.storytime.stolbysassistant.recycler.RecyclerItem;
-import diploma.storytime.stolbysassistant.recycler.RecyclerItemClickListener;
+import diploma.storytime.stolbysassistant.recycler.RecyclerViewListener;
+import diploma.storytime.stolbysassistant.utils.FragmentChanger;
 import diploma.storytime.stolbysassistant.views.MainActivity;
-import timber.log.Timber;
 
-import static android.support.constraint.Constraints.TAG;
 
 public class MainFragment extends Fragment {
     private MainActivity activity;
-    RecyclerAdapter adapter;
-    ArrayList<RecyclerItem> items = new ArrayList<>();
-    RecyclerView recycler;
-    int currentItem;
+    private RecyclerAdapter adapter;
+    private ArrayList<RecyclerItem> items = new ArrayList<>();
+    private RecyclerView recycler;
+
+    private RecyclerViewListener listener = (view, position) -> {
+        switch (position){
+            case 0:{
+                FragmentChanger.changeFragment(new MapFragment(), activity);
+                break;
+            }
+            case 1:{
+                FragmentChanger.changeFragment(new CameraFragment(), activity);
+                break;
+            }
+            case 2:{
+                FragmentChanger.changeFragment(new CompassFragment(), activity);
+                break;
+            }
+            case 3:{
+                FragmentChanger.changeFragment(new PillarsFragment(), activity);
+                break;
+            }
+            default:{
+
+                break;
+            }
+        }
+    };
 
     public MainFragment(){
 
     }
+
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         activity = (MainActivity) context;
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.content_main, container, false);
@@ -50,17 +74,10 @@ public class MainFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        adapter = new RecyclerAdapter(activity);
-        // This will initialise Timber
-        if (BuildConfig.DEBUG) {
-            Timber.plant(new Timber.DebugTree());
-        }
-
+        adapter = new RecyclerAdapter(activity, listener);
     }
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        Timber.d("success");
-
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         initializeModels();
         recycler = view.findViewById(R.id.recyclerView);
         if (recycler != null) {
@@ -68,18 +85,8 @@ public class MainFragment extends Fragment {
             recycler.setLayoutManager(new LinearLayoutManager(activity));
             recycler.setAdapter(adapter);
         }
-        adapter.setDataSet(items);
-        adapter.setOnItemClickListener(new RecyclerAdapter.ClickListener() {
-            @Override
-            public void onItemClick(int position, View v) {
-                Log.d(TAG, "onItemClick position: " + position);
-            }
+        adapter.updateData(items);
 
-            @Override
-            public void onItemLongClick(int position, View v) {
-                Log.d(TAG, "onLongItemClick position: " + position);
-            }
-        });
     }
 
     private void initializeModels(){
@@ -106,5 +113,4 @@ public class MainFragment extends Fragment {
                 new Intent(activity, MainActivity.class),
                 R.drawable.pillars_tease));
     }
-
 }

@@ -1,6 +1,7 @@
 package diploma.storytime.stolbysassistant.fragments;
 
-import android.app.Fragment;
+import androidx.fragment.app.Fragment;
+
 import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -25,7 +26,7 @@ public class CompassFragment extends Fragment implements SensorEventListener {
     private ImageView headerImage;
     private float rotateDegree = 0f;
     private SensorManager sensorManager;
-    TextView orientText;
+    private TextView orientText;
 
     @Override
     public void onAttach(Context context) {
