@@ -2,9 +2,8 @@ package diploma.storytime.stolbysassistant.fragments;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.os.Bundle;
-
 import android.content.Intent;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,16 +15,17 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-//import butterknife.BindView;
-//import butterknife.ButterKnife;
+import com.parse.ParseUser;
+
 import diploma.storytime.stolbysassistant.R;
 import diploma.storytime.stolbysassistant.utils.FragmentChanger;
 import diploma.storytime.stolbysassistant.utils.UserChanger;
 import diploma.storytime.stolbysassistant.views.MainActivity;
 
-import com.parse.ParseUser;
-
 import static android.app.Activity.RESULT_OK;
+
+//import butterknife.BindView;
+//import butterknife.ButterKnife;
 
 public class LoginFragment extends Fragment {
     private MainActivity activity;
@@ -60,6 +60,7 @@ public class LoginFragment extends Fragment {
         super.onCreate(savedInstanceState);
         //ButterKnife.bind(activity);
     }
+
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState){
         emailText = activity.findViewById(R.id.input_email);

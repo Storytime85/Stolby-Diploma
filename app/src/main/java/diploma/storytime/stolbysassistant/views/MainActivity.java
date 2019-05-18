@@ -12,9 +12,6 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,14 +21,21 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.navigation.NavigationView;
 
+import org.json.simple.parser.ParseException;
+
+import java.io.IOException;
+import java.util.ArrayList;
+
+import diploma.storytime.stolbysassistant.R;
 import diploma.storytime.stolbysassistant.fragments.CameraFragment;
 import diploma.storytime.stolbysassistant.fragments.CompassFragment;
 import diploma.storytime.stolbysassistant.fragments.LoginFragment;
 import diploma.storytime.stolbysassistant.fragments.MainFragment;
 import diploma.storytime.stolbysassistant.fragments.MapFragment;
 import diploma.storytime.stolbysassistant.fragments.PillarsFragment;
-import diploma.storytime.stolbysassistant.R;
 import diploma.storytime.stolbysassistant.utils.FragmentChanger;
+import diploma.storytime.stolbysassistant.utils.ReadJSON;
+import diploma.storytime.stolbysassistant.utils.maputils.Pillar;
 
 
 public class MainActivity extends AppCompatActivity
@@ -45,6 +49,8 @@ public class MainActivity extends AppCompatActivity
 
     //@BindView(R.id.userImageView)
     public ImageView imageView;
+
+    public ArrayList<Pillar> pillars;
 
     public ImageView getImageView() {
         return imageView;
@@ -70,38 +76,51 @@ public class MainActivity extends AppCompatActivity
         this.userNameTextView = userNameTextView;
     }
 
+    public ArrayList<Pillar> getPillars() {
+        return pillars;
+    }
+
+    public void setPillars(ArrayList<Pillar> pillars) {
+        this.pillars = pillars;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //ButterKnife.bind(this);
         setContentView(R.layout.activity_main);
 
-        emailTextView = (TextView) findViewById(R.id.user_email);
+        emailTextView = findViewById(R.id.user_email);
         userNameTextView = findViewById(R.id.user_name);
         imageView = findViewById(R.id.userImageView);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        try {
+            pillars = ReadJSON.readPillars(this, R.raw.pillars);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
         setSupportActionBar(toolbar);
 
-        FragmentChanger.changeFragment(new MainFragment(),this);
+        FragmentChanger.createFirstFragment(new MainFragment(), this);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
     }
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
+        if (getFragmentManager().getBackStackEntryCount() == 0) {
             super.onBackPressed();
+        } else {
+            getFragmentManager().popBackStack();
         }
     }
 
