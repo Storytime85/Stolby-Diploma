@@ -1,11 +1,8 @@
 package diploma.storytime.stolbysassistant.fragments;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -14,13 +11,13 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
 import org.json.simple.parser.ParseException;
 import org.osmdroid.api.IGeoPoint;
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
+import org.osmdroid.tileprovider.MapTileProviderArray;
 import org.osmdroid.tileprovider.tilesource.MapBoxTileSource;
 import org.osmdroid.tileprovider.tilesource.XYTileSource;
 import org.osmdroid.util.GeoPoint;
@@ -37,6 +34,7 @@ import org.osmdroid.views.overlay.simplefastpoint.SimplePointTheme;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import diploma.storytime.stolbysassistant.BuildConfig;
 import diploma.storytime.stolbysassistant.R;
@@ -45,6 +43,7 @@ import diploma.storytime.stolbysassistant.utils.ReadJSON;
 import diploma.storytime.stolbysassistant.utils.maputils.AlpineHat;
 import diploma.storytime.stolbysassistant.utils.maputils.Pillar;
 import diploma.storytime.stolbysassistant.views.MainActivity;
+
 
 public class MapFragment extends Fragment {
     private MainActivity activity;
@@ -57,6 +56,11 @@ public class MapFragment extends Fragment {
     private SensorManager sensorManager;
     private MyLocationNewOverlay locationOverlay;
     private ArrayList<Pillar> pillars;
+
+    private MapTileProviderArray mapProvider;
+    private String mapTileArchivePath = "base.sqlite";
+
+
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -82,15 +86,18 @@ public class MapFragment extends Fragment {
 
         mapView = activity.findViewById(R.id.mapView);
 
-        //mapView.setTileSource(TileSourceFactory.MAPNIK);
-        String path = "android.resource://" + activity.getPackageName() + "/" + R.raw.stolby;
-
-        mapView.setTileSource(new XYTileSource(path, 10, 20, 256, ".png", new String[]{}));
-        //....
+        XYTileSource tileSource = new XYTileSource("Stolby", 11, 18,
+                256, ".jpg", new String[]{
+                "http://otile1.mqcdn.com/tiles/1.0.0/map/",
+                "http://otile2.mqcdn.com/tiles/1.0.0/map/",
+                "http://otile3.mqcdn.com/tiles/1.0.0/map/",
+                "http://otile4.mqcdn.com/tiles/1.0.0/map/"});
+        mapView.setTileSource(tileSource);
         mapView.setUseDataConnection(false);
-
         mapView.setMultiTouchControls(true);
-        IMapController mapController = mapView.getController();
+        mapController = mapView.getController();
+
+        mapView.scrollTo(55, 92);
         mapController.setZoom(11.0);
 
         createPolyline(R.raw.inner_line, Color.GREEN);
@@ -100,16 +107,24 @@ public class MapFragment extends Fragment {
 
         ScaleBarOverlay scaleBar = new ScaleBarOverlay(mapView);
         mapView.getOverlays().add(scaleBar);
+//        Timer t = new Timer();
 
         locationOverlay = new MyLocationNewOverlay(mapView);
         locationOverlay.enableFollowLocation();
-        Drawable currentDraw = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_dot, null);
-        Bitmap currentIcon = null;
-        if (currentDraw != null) {
-            currentIcon = ((BitmapDrawable) currentDraw).getBitmap();
-        }
-        locationOverlay.setPersonIcon(currentIcon);
         locationOverlay.enableMyLocation();
+//        t.scheduleAtFixedRate(new TimerTask() {
+//                          @Override
+//                          public void run() {
+//                              activity.refreshPosition();
+//                              if (checkCoordinates()){
+//                                  locationOverlay.enableMyLocation();
+//                              } else {
+//                                  locationOverlay.disableMyLocation();
+//                              }
+//                          }
+//                      },
+//                0,
+//                10000);
         mapView.getOverlays().add(locationOverlay);
         addAlpineHats();
         addPillarsOnMap();
@@ -119,6 +134,8 @@ public class MapFragment extends Fragment {
     public void onResume() {
         super.onResume();
         mapView.onResume();
+        mapView.scrollTo(55, 92);
+        mapController.setZoom(11.0);
     }
 
     @Override
@@ -180,33 +197,28 @@ public class MapFragment extends Fragment {
         textStyle.setTextAlign(Paint.Align.CENTER);
         textStyle.setTextSize(24);
 
-// set some visual options for the overlay
-// we use here MAXIMUM_OPTIMIZATION algorithm, which works well with >100k points
         SimpleFastPointOverlayOptions opt = SimpleFastPointOverlayOptions.getDefaultStyle()
                 .setAlgorithm(SimpleFastPointOverlayOptions.RenderingAlgorithm.MEDIUM_OPTIMIZATION)
                 .setRadius(7).setIsClickable(false).setCellSize(15).setTextStyle(textStyle);
 
-// create the overlay with the theme
         final SimpleFastPointOverlay sfpo = new SimpleFastPointOverlay(pt, opt);
 
-//        sfpo.setOnClickListener(new SimpleFastPointOverlay.OnClickListener() {
-//            @Override
-//            public void onClick(SimpleFastPointOverlay.PointAdapter points, Integer point) {
-//                Toast.makeText(mMapView.getContext()
-//                        , "You clicked " + ((LabelledGeoPoint) points.get(point)).getLabel()
-//                        , Toast.LENGTH_SHORT).show();
-//            }
-//        });
 
         mapView.getOverlays().add(sfpo);
     }
 
     private void addPillarsOnMap() {
         List<IGeoPoint> points = new ArrayList<>();
-
+        String string = Locale.getDefault().getDisplayLanguage();
+        int i;
+        if (string.equals("русский")) {
+            i = 0;
+        } else {
+            i = 1;
+        }
         for (Pillar pillar : pillars) {
             points.add(new LabelledGeoPoint(pillar.getCoordinates()[0], pillar.getCoordinates()[1],
-                    pillar.getNames()[0]));
+                    pillar.getNames()[i]));
         }
 
         SimplePointTheme pt = new SimplePointTheme(points, true);
@@ -229,5 +241,12 @@ public class MapFragment extends Fragment {
         });
 
         mapView.getOverlays().add(sfpo);
+    }
+
+    private boolean checkCoordinates() {
+        //55.703, 92.621 юго-запад
+        //55.978, 93.354 северо-восток
+        return (activity.getLongitude() > 55.703 && activity.getLongitude() < 55.978)
+                && (activity.getLatitude() > 92.621 && activity.getLongitude() < 93.354);
     }
 }

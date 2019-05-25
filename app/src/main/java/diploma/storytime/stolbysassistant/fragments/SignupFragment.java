@@ -3,7 +3,6 @@ package diploma.storytime.stolbysassistant.fragments;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,13 +14,10 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import com.parse.ParseUser;
-
-//import butterknife.ButterKnife;
-//import butterknife.BindView;
 import diploma.storytime.stolbysassistant.R;
 import diploma.storytime.stolbysassistant.utils.FragmentChanger;
-import diploma.storytime.stolbysassistant.utils.UserChanger;
+import diploma.storytime.stolbysassistant.utils.HTTPRequest;
+import diploma.storytime.stolbysassistant.utils.PasswordUtils;
 import diploma.storytime.stolbysassistant.views.MainActivity;
 
 import static android.app.Activity.RESULT_OK;
@@ -96,8 +92,9 @@ public class SignupFragment extends Fragment {
         String email = emailText.getText().toString();
         String password = passwordText.getText().toString();
 
-        // TODO: Implement your own signup logic here.
-        UserChanger.signupUser(name,password,email,activity);
+        String salt = PasswordUtils.getSalt(30);
+        String securedPassword = PasswordUtils.generateSecurePassword(password, salt);
+        HTTPRequest.signup(activity, name, email, securedPassword, salt);
         new android.os.Handler().postDelayed(
                 () -> {
                     // On complete call either onSignupSuccess or onSignupFailed

@@ -15,14 +15,14 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import com.parse.ParseUser;
-
 import diploma.storytime.stolbysassistant.R;
 import diploma.storytime.stolbysassistant.utils.FragmentChanger;
-import diploma.storytime.stolbysassistant.utils.UserChanger;
+import diploma.storytime.stolbysassistant.utils.HTTPRequest;
 import diploma.storytime.stolbysassistant.views.MainActivity;
 
 import static android.app.Activity.RESULT_OK;
+
+//import diploma.storytime.stolbysassistant.utils.UserChanger;
 
 //import butterknife.BindView;
 //import butterknife.ButterKnife;
@@ -92,12 +92,6 @@ public class LoginFragment extends Fragment {
         String email = emailText.getText().toString();
         String password = passwordText.getText().toString();
 
-        // TODO: Implement your own authentication logic here.
-        if (ParseUser.getCurrentUser() != null) {
-            UserChanger.loginUser(password,email,activity);
-        } else {
-            ParseUser.logOut();
-        }
         new android.os.Handler().postDelayed(
                 () -> {
                     // On complete call either onLoginSuccess or onLoginFailed
@@ -105,6 +99,7 @@ public class LoginFragment extends Fragment {
                     // onLoginFailed();
                     progressDialog.dismiss();
                 }, 3000);
+        HTTPRequest.login(activity, email, password);
     }
 
 

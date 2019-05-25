@@ -16,17 +16,28 @@
             <TextView
                 android:id="@+id/pillar_title"
                 android:layout_width="match_parent"
-                android:layout_height="72dp" />
+                android:layout_height="72dp"
+                android:textAlignment="center"
+                android:textSize="24sp" />
 
             <TextView
                 android:id="@+id/pillar_subtitle"
                 android:layout_width="match_parent"
-                android:layout_height="50dp" />
+                android:layout_height="50dp"
+                android:textAlignment="center" />
 
             <TextView
                 android:id="@+id/pillar_text"
                 android:layout_width="match_parent"
-                android:layout_height="693dp" />
+                android:layout_height="1067dp"
+                android:includeFontPadding="true"
+                android:lineSpacingExtra="4dp"
+                android:paddingLeft="10dp" />
+
+            <ImageView
+                android:id="@+id/pillar_image"
+                android:layout_width="match_parent"
+                android:layout_height="460dp" />
         </LinearLayout>
     </ScrollView>
 

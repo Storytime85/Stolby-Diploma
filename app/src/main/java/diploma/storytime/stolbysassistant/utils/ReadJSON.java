@@ -67,15 +67,18 @@ public class ReadJSON {
         double[] coordinates = new double[2];
         String[] names = new String[4];
         String[] descriptions = new String[4];
+        //String image;
         JSONArray jsonNames = (JSONArray) obj.get("name");
         JSONArray jsonDescriptions = (JSONArray) obj.get("description");
         JSONArray jsonCoordinates = (JSONArray) obj.get("coordinates");
+        String image = (String) obj.get("image");
         if ((jsonCoordinates == null) || (jsonDescriptions == null) || (jsonNames == null)) {
             throw new AssertionError();
         }
         Iterator itNames = jsonNames.iterator();
         Iterator itDescriptions = jsonDescriptions.iterator();
         Iterator itCoordinates = jsonCoordinates.iterator();
+        //Iterator itImages = jsonImages.iterator();
         for (int i = 0; i < 2; i++) {
             coordinates[i] = (Double) itCoordinates.next();
         }
@@ -83,7 +86,8 @@ public class ReadJSON {
             names[i] = (String) itNames.next();
             descriptions[i] = (String) itDescriptions.next();
         }
-        return new Pillar(coordinates, names, descriptions);
+        //image = (String)itImages.next();
+        return new Pillar(coordinates, names, descriptions, image);
     }
 
     static public ArrayList<Polyline> readRailroads(@NonNull Context context, int resId)

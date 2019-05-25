@@ -1,15 +1,11 @@
 package diploma.storytime.stolbysassistant.views;
 
-//import android.app.Fragment;
-//import android.app.FragmentTransaction;
-//import android.os.Bundle;
-//import android.view.Menu;
-//import android.view.MenuItem;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -19,6 +15,8 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.material.navigation.NavigationView;
 
 import org.json.simple.parser.ParseException;
@@ -29,51 +27,62 @@ import java.util.ArrayList;
 import diploma.storytime.stolbysassistant.R;
 import diploma.storytime.stolbysassistant.fragments.CameraFragment;
 import diploma.storytime.stolbysassistant.fragments.CompassFragment;
+import diploma.storytime.stolbysassistant.fragments.FriendsFragment;
 import diploma.storytime.stolbysassistant.fragments.LoginFragment;
 import diploma.storytime.stolbysassistant.fragments.MainFragment;
 import diploma.storytime.stolbysassistant.fragments.MapFragment;
 import diploma.storytime.stolbysassistant.fragments.PillarsFragment;
 import diploma.storytime.stolbysassistant.utils.FragmentChanger;
 import diploma.storytime.stolbysassistant.utils.ReadJSON;
+import diploma.storytime.stolbysassistant.utils.User;
 import diploma.storytime.stolbysassistant.utils.maputils.Pillar;
 
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private FusedLocationProviderClient fusedLocationClient;
+
+    private boolean isStarted = true;
+    private double[] currentLocation = new double[2];
+    private User user;
+    private MenuItem logIn, logOut;
+
+    public double getLongitude() {
+        return currentLocation[0];
+    }
+
+    public double getLatitude() {
+        return currentLocation[1];
+    }
+
+    public boolean isStarted() {
+        return isStarted;
+    }
     //@BindView(R.id.user_email)
     public TextView emailTextView;
 
     //@BindView(R.id.user_name)
     public TextView userNameTextView;
 
-    //@BindView(R.id.userImageView)
-    public ImageView imageView;
-
     public ArrayList<Pillar> pillars;
 
-    public ImageView getImageView() {
-        return imageView;
+    public void setStarted(boolean started) {
+        isStarted = started;
     }
 
-    public void setImageView(ImageView imageView) {
-        this.imageView = imageView;
-    }
-
-    public TextView getEmailTextView() {
-        return emailTextView;
-    }
-
-    public void setEmailTextView(TextView emailTextView) {
-        this.emailTextView = emailTextView;
-    }
-
-    public TextView getUserNameTextView() {
-        return userNameTextView;
-    }
-
-    public void setUserNameTextView(TextView userNameTextView) {
-        this.userNameTextView = userNameTextView;
+    public void refreshPosition() {
+        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            fusedLocationClient.getLastLocation()
+                    .addOnSuccessListener(this, location -> {
+                        if (location != null && location.getLongitude() != 0 && location.getLatitude() != 0) {
+                            currentLocation[1] = location.getLatitude();
+                            currentLocation[0] = location.getLongitude();
+                        } else {
+                            //none
+                        }
+                    });
+        }
     }
 
     public ArrayList<Pillar> getPillars() {
@@ -84,15 +93,27 @@ public class MainActivity extends AppCompatActivity
         this.pillars = pillars;
     }
 
+    public TextView getEmailTextView() {
+        return emailTextView;
+    }
+
+    public void setEmailTextView(TextView emailTextView) {
+        this.emailTextView = emailTextView;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //ButterKnife.bind(this);
         setContentView(R.layout.activity_main);
-
-        emailTextView = findViewById(R.id.user_email);
-        userNameTextView = findViewById(R.id.user_name);
-        imageView = findViewById(R.id.userImageView);
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         Toolbar toolbar = findViewById(R.id.toolbar);
         try {
             pillars = ReadJSON.readPillars(this, R.raw.pillars);
@@ -113,6 +134,13 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+    }
+
+    @Override
+    public void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+
     }
 
     @Override
@@ -125,13 +153,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -139,7 +160,7 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.menu_russian) {
             return true;
         }
 
@@ -160,15 +181,54 @@ public class MainActivity extends AppCompatActivity
             FragmentChanger.changeFragment(new CompassFragment(),this);
         } else if (id == R.id.nav_stolby) {
             FragmentChanger.changeFragment(new PillarsFragment(),this);
-        } else if (id == R.id.nav_settings) {
-
-            //changeFragment(settingsFragment);
-
+        } else if (id == R.id.nav_log_out) {
+            emailTextView.setText("");
+            userNameTextView.setText("");
+            user = new User();
+            switchMenuItems(false);
         } else if (id == R.id.nav_login){
             FragmentChanger.changeFragment(new LoginFragment(),this);
+        } else if (id == R.id.nav_friends) {
+            FragmentChanger.changeFragment(new FriendsFragment(), this);
         }
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public void setUserInfo() {
+        //i dunno why, but they are switched, don't touch it
+        emailTextView = findViewById(R.id.user_name);
+        userNameTextView = findViewById(R.id.user_email);
+        emailTextView.setText(user.getEmail());
+        userNameTextView.setText(user.getName());
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.activity_main_drawer, menu);
+        // Get dynamic menu item
+        logIn = menu.findItem(R.id.nav_login);
+        logOut = menu.findItem(R.id.nav_log_out);
+//        logIn.setVisible(!isStarted);
+//        logOut.setVisible(isStarted);
+        return true;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        // Inflate the menu; this adds items to the action bar if it is present.
+        //      getMenuInflater().inflate(R.menu.activity_main_drawer, menu);
+//        // Get dynamic menu item
+//        logIn = menu.findItem(R.id.nav_login);
+//        logOut = menu.findItem(R.id.nav_log_out);
+        return true;
+    }
+
+    public void switchMenuItems(boolean switcher) {
+        logIn.setVisible(!switcher);
+        logOut.setVisible(switcher);
     }
 }

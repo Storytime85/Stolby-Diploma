@@ -2,8 +2,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/action_settings"
+        android:id="@+id/menu_english"
+        android:title="English" />
+    <item
+        android:id="@+id/menu_russian"
         android:orderInCategory="100"
-        android:title="@string/action_settings"
+        android:title="Русский"
         app:showAsAction="never" />
 </menu>

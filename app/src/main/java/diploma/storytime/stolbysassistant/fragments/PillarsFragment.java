@@ -10,9 +10,9 @@ import android.widget.ListView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 import diploma.storytime.stolbysassistant.R;
 import diploma.storytime.stolbysassistant.utils.FragmentChanger;
@@ -28,11 +28,6 @@ public class PillarsFragment extends Fragment {
 
     public PillarsFragment(){
 
-    }
-
-    public void onBackPressed() {
-        FragmentManager fm = getActivity().getSupportFragmentManager();
-        fm.popBackStack();
     }
 
     @Override
@@ -73,19 +68,19 @@ public class PillarsFragment extends Fragment {
     private void initializeArrays() {
         names = new String[pillars.size()];
         ids = new int[pillars.size()];
-        for (int i = 0; i < pillars.size(); i++) {
-            names[i] = pillars.get(i).getNames()[0];
-            ids[i] = i;
+        String string = Locale.getDefault().getDisplayLanguage();
+        int in;
+        if (string.equals("русский")) {
+            in = 0;
+        } else {
+            in = 1;
         }
-        for (int j = names.length - 1; j >= 1; j--) {
-            for (int i = 0; i < j; i++) {
-                if (names[i].compareTo(names[j]) >= 0)
-                    toSwap(i, i + 1);
-            }
+        for (int i = 0; i < pillars.size(); i++) {
+            names[i] = pillars.get(i).getNames()[in];
+            ids[i] = i;
         }
         sortArrays();
     }
-
 
     private void sortArrays() {
         for (int j = names.length - 1; j >= 1; j--) {

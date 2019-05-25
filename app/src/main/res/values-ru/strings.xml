@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Stolby\'s Assistant</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_desc">Navigation header</string>
+
+    <string name="action_settings">Настройки</string>
+    <string name="camera">Дополненная реальность</string>
+    <string name="map">Карта</string>
+    <string name="login">Войти</string>
+    <string name="settings">Настройки</string>
+    <string name="compass">Компас</string>
+    <string name="stolby">Столбы</string>
+    <string name="main_page">Главная страница</string>
+    <string name="map_title">Карта</string>
+    <string name="map_description">Карта заповденика Столбы</string>
+    <string name="ar_title">Дополненная реальность</string>
+    <string name="ar_description">Используйте дополненную реальность для отображения объектов на экране</string>
+    <string name="compass_title">Компас</string>
+    <string name="compass_description">Простой компас</string>
+    <string name="pillars_title">Столбы</string>
+    <string name="pillars_description">Информация о скалах заповедника</string>
+    <string name="failed_registration">Этот e-mail или логин уже заняты</string>
+    <string name="failed_signup">Этот e-mail уже занят</string>
+    <string name="success_registration">Регистрация прошла успешно. Пожалуйста, войдите в свою учетную запись</string>
+
+    <string name="success_login">Успех</string>
+    <string name="failed_login">Неверный e-mail или пароль. Проверьте правильность введенных данных</string>
+    <string name="nav_log_out">Выйти</string>
+    <string name="nav_friends">Друзья</string>
+
+    <string name="add">Добавить</string>
+    <string name="copy">Копировать</string>
+    <string name="show">Показать</string>
+    <string name="full_list">Ваш список друзей полон. Вы не можете добавить еще.</string>
+    <string name="refresh">Обновить</string>
+</resources>

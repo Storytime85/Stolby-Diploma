@@ -11,7 +11,18 @@
         <item
             android:id="@+id/nav_login"
             android:icon="@drawable/ic_login"
-            android:title="@string/login" />
+            android:title="@string/login"
+            android:visible="true" />
+        <item
+            android:id="@+id/nav_log_out"
+            android:icon="@drawable/ic_log_out"
+            android:title="@string/nav_log_out"
+            android:visible="false" />
+        <item
+            android:id="@+id/nav_friends"
+            android:icon="@drawable/ic_friends"
+            android:title="@string/nav_friends"
+            android:visible="false" />
         <item
             android:id="@+id/nav_map"
             android:icon="@drawable/ic_map"
@@ -28,10 +39,6 @@
             android:id="@+id/nav_stolby"
             android:icon="@drawable/ic_rock"
             android:title="@string/stolby" />
-        <item
-            android:id="@+id/nav_settings"
-            android:icon="@drawable/ic_settngs"
-            android:title="@string/settings" />
     </group>
 
 </menu>
