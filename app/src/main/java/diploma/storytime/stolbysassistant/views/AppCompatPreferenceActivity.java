@@ -3,11 +3,6 @@ package diploma.storytime.stolbysassistant.views;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
-//import android.support.annotation.LayoutRes;
-//import android.support.annotation.Nullable;
-//import android.support.v7.app.ActionBar;
-//import android.support.v7.app.AppCompatDelegate;
-//import android.support.v7.widget.Toolbar;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,13 +13,19 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 
+//import android.support.annotation.LayoutRes;
+//import android.support.annotation.Nullable;
+//import android.support.v7.app.ActionBar;
+//import android.support.v7.app.AppCompatDelegate;
+//import android.support.v7.widget.Toolbar;
+
 /**
  * A {@link android.preference.PreferenceActivity} which implements and proxies the necessary calls
  * to be used with AppCompat.
  */
 public abstract class AppCompatPreferenceActivity extends PreferenceActivity {
 
-    private AppCompatDelegate mDelegate;
+    private AppCompatDelegate delegate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,9 +108,9 @@ public abstract class AppCompatPreferenceActivity extends PreferenceActivity {
     }
 
     private AppCompatDelegate getDelegate() {
-        if (mDelegate == null) {
-            mDelegate = AppCompatDelegate.create(this, null);
+        if (delegate == null) {
+            delegate = AppCompatDelegate.create(this, null);
         }
-        return mDelegate;
+        return delegate;
     }
 }

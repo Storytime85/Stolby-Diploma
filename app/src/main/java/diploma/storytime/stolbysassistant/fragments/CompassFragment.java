@@ -1,7 +1,6 @@
 package diploma.storytime.stolbysassistant.fragments;
 
-import androidx.fragment.app.Fragment;
-
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -15,6 +14,8 @@ import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.fragment.app.Fragment;
 
 import diploma.storytime.stolbysassistant.R;
 import diploma.storytime.stolbysassistant.views.MainActivity;
@@ -51,6 +52,7 @@ public class CompassFragment extends Fragment implements SensorEventListener {
         super.onCreate(savedInstanceState);
 
     }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -65,6 +67,7 @@ public class CompassFragment extends Fragment implements SensorEventListener {
     }
 
     @Override
+    @SuppressLint("SetTextI18n")
     public void onSensorChanged(SensorEvent event) {
         float degree = Math.round(event.values[0]);
         String degrees;
@@ -90,6 +93,6 @@ public class CompassFragment extends Fragment implements SensorEventListener {
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
-        //Empty
+
     }
 }

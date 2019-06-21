@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.SearchView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -20,11 +21,12 @@ import diploma.storytime.stolbysassistant.utils.maputils.Pillar;
 import diploma.storytime.stolbysassistant.views.MainActivity;
 
 public class PillarsFragment extends Fragment {
-
     private MainActivity activity;
+
     private ArrayList<Pillar> pillars;
     private String[] names;
     private int[] ids;
+    private SearchView searchView;
 
     public PillarsFragment(){
 
@@ -49,6 +51,7 @@ public class PillarsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         ListView lvMain = activity.findViewById(R.id.lvMain);
+        searchView = activity.findViewById(R.id.search_view);
         ArrayAdapter<String> adapter = new ArrayAdapter<>(activity,
                 R.layout.text_support, names);
         lvMain.setAdapter(adapter);
@@ -62,6 +65,20 @@ public class PillarsFragment extends Fragment {
                 }
             }
             FragmentChanger.changeFragment(new OnePillarFragment(pillarid), activity);
+        });
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+
+                adapter.getFilter().filter(newText);
+                return false;
+            }
         });
     }
 
@@ -98,6 +115,5 @@ public class PillarsFragment extends Fragment {
         int tempInt = ids[first];
         ids[first] = ids[second];
         ids[second] = tempInt;
-
     }
 }

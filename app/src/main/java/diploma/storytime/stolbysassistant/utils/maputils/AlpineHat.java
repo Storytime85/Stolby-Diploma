@@ -9,6 +9,7 @@ public class AlpineHat {
         this.names = names;
     }
 
+    //region getters/setters
     public double[] getCoordinates() {
         return coordinates;
     }
@@ -24,4 +25,5 @@ public class AlpineHat {
     public void setNames(String[] names) {
         this.names = names;
     }
+    //endregion
 }

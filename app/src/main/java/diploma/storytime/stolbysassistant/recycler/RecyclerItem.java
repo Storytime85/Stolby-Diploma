@@ -17,6 +17,7 @@ public class RecyclerItem {
         this.imageUrl = imageUrl;
     }
 
+    //region getters/setters
     public int getTitle() {
         return title;
     }
@@ -48,4 +49,5 @@ public class RecyclerItem {
     public void setImageUrl(int imageUrl) {
         this.imageUrl = imageUrl;
     }
+    //endregion
 }

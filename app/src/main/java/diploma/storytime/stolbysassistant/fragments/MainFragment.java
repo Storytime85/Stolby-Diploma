@@ -1,8 +1,5 @@
 package diploma.storytime.stolbysassistant.fragments;
 
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,6 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -25,6 +24,7 @@ import diploma.storytime.stolbysassistant.views.MainActivity;
 
 public class MainFragment extends Fragment {
     private MainActivity activity;
+
     private RecyclerAdapter adapter;
     private ArrayList<RecyclerItem> items = new ArrayList<>();
     private RecyclerView recycler;
@@ -36,14 +36,10 @@ public class MainFragment extends Fragment {
                 break;
             }
             case 1:{
-                FragmentChanger.changeFragment(new CameraFragment(), activity);
-                break;
-            }
-            case 2:{
                 FragmentChanger.changeFragment(new CompassFragment(), activity);
                 break;
             }
-            case 3:{
+            case 2:{
                 FragmentChanger.changeFragment(new PillarsFragment(), activity);
                 break;
             }
@@ -67,7 +63,6 @@ public class MainFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.content_main, container, false);
     }
 
@@ -76,6 +71,7 @@ public class MainFragment extends Fragment {
         super.onCreate(savedInstanceState);
         adapter = new RecyclerAdapter(activity, listener);
     }
+
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         initializeModels();
@@ -90,18 +86,11 @@ public class MainFragment extends Fragment {
     }
 
     private void initializeModels(){
-        //RecyclerItem(int title, int description, Intent javaActivity,
-        //                        int imageUrl)
         items.add(new RecyclerItem(
                 R.string.map_title,
                 R.string.map_description,
                 new Intent(activity, MainActivity.class),
                 R.drawable.maps_tease));
-        items.add(new RecyclerItem(
-                R.string.ar_title,
-                R.string.ar_description,
-                new Intent(activity, MainActivity.class),
-                R.drawable.ar_tease));
         items.add(new RecyclerItem(
                 R.string.compass_title,
                 R.string.compass_description,

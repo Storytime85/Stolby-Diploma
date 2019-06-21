@@ -3,7 +3,6 @@ package diploma.storytime.stolbysassistant.fragments;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
@@ -17,14 +16,11 @@ import org.json.simple.parser.ParseException;
 import org.osmdroid.api.IGeoPoint;
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
-import org.osmdroid.tileprovider.MapTileProviderArray;
-import org.osmdroid.tileprovider.tilesource.MapBoxTileSource;
 import org.osmdroid.tileprovider.tilesource.XYTileSource;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Polyline;
 import org.osmdroid.views.overlay.ScaleBarOverlay;
-import org.osmdroid.views.overlay.gestures.RotationGestureOverlay;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 import org.osmdroid.views.overlay.simplefastpoint.LabelledGeoPoint;
 import org.osmdroid.views.overlay.simplefastpoint.SimpleFastPointOverlay;
@@ -39,6 +35,7 @@ import java.util.Locale;
 import diploma.storytime.stolbysassistant.BuildConfig;
 import diploma.storytime.stolbysassistant.R;
 import diploma.storytime.stolbysassistant.utils.FragmentChanger;
+import diploma.storytime.stolbysassistant.utils.Friend;
 import diploma.storytime.stolbysassistant.utils.ReadJSON;
 import diploma.storytime.stolbysassistant.utils.maputils.AlpineHat;
 import diploma.storytime.stolbysassistant.utils.maputils.Pillar;
@@ -49,17 +46,9 @@ public class MapFragment extends Fragment {
     private MainActivity activity;
 
     private MapView mapView;
-    private ScaleBarOverlay scaleBarOverlay;
-    private MapBoxTileSource tileSource;
     private IMapController mapController;
-    private RotationGestureOverlay rotationGestureOverlay;
-    private SensorManager sensorManager;
     private MyLocationNewOverlay locationOverlay;
     private ArrayList<Pillar> pillars;
-
-    private MapTileProviderArray mapProvider;
-    private String mapTileArchivePath = "base.sqlite";
-
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -107,33 +96,23 @@ public class MapFragment extends Fragment {
 
         ScaleBarOverlay scaleBar = new ScaleBarOverlay(mapView);
         mapView.getOverlays().add(scaleBar);
-//        Timer t = new Timer();
 
         locationOverlay = new MyLocationNewOverlay(mapView);
         locationOverlay.enableFollowLocation();
         locationOverlay.enableMyLocation();
-//        t.scheduleAtFixedRate(new TimerTask() {
-//                          @Override
-//                          public void run() {
-//                              activity.refreshPosition();
-//                              if (checkCoordinates()){
-//                                  locationOverlay.enableMyLocation();
-//                              } else {
-//                                  locationOverlay.disableMyLocation();
-//                              }
-//                          }
-//                      },
-//                0,
-//                10000);
+
         mapView.getOverlays().add(locationOverlay);
         addAlpineHats();
         addPillarsOnMap();
+        if (activity.getUser() != null) {
+            addFriendsOnMap();
+        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        mapView.onResume();
+//        mapView.onResume();
         mapView.scrollTo(55, 92);
         mapController.setZoom(11.0);
     }
@@ -203,7 +182,6 @@ public class MapFragment extends Fragment {
 
         final SimpleFastPointOverlay sfpo = new SimpleFastPointOverlay(pt, opt);
 
-
         mapView.getOverlays().add(sfpo);
     }
 
@@ -229,7 +207,6 @@ public class MapFragment extends Fragment {
         textStyle.setTextAlign(Paint.Align.CENTER);
         textStyle.setTextSize(24);
 
-
         SimpleFastPointOverlayOptions opt = SimpleFastPointOverlayOptions.getDefaultStyle()
                 .setAlgorithm(SimpleFastPointOverlayOptions.RenderingAlgorithm.MEDIUM_OPTIMIZATION)
                 .setRadius(7).setIsClickable(true).setCellSize(15).setTextStyle(textStyle);
@@ -243,10 +220,39 @@ public class MapFragment extends Fragment {
         mapView.getOverlays().add(sfpo);
     }
 
+    //TODO: обновление местоположения, друзья
     private boolean checkCoordinates() {
-        //55.703, 92.621 юго-запад
-        //55.978, 93.354 северо-восток
         return (activity.getLongitude() > 55.703 && activity.getLongitude() < 55.978)
                 && (activity.getLatitude() > 92.621 && activity.getLongitude() < 93.354);
+    }
+
+    private void addFriendsOnMap() {
+
+        List<IGeoPoint> points = new ArrayList<>();
+        ArrayList<Friend> alpines = new ArrayList<>();
+        alpines.add(new Friend("Max", true, 55.728, 92.999));
+        alpines.add(new Friend("Елисей", false, 55.778, 92.95));
+        alpines.add(new Friend("Elena", true, 55.758, 92.811));
+        alpines.add(new Friend("Василий", true, 55.838, 92.745));
+        for (Friend f : alpines) {
+            if (f.isStatus()) {
+                points.add(new LabelledGeoPoint(f.getLatitude(), f.getLongitude(), f.getName()));
+            }
+        }
+        SimplePointTheme pt = new SimplePointTheme(points, true);
+
+        Paint textStyle = new Paint();
+        textStyle.setStyle(Paint.Style.FILL);
+        textStyle.setColor(Color.parseColor("#000000"));
+        textStyle.setTextAlign(Paint.Align.CENTER);
+        textStyle.setTextSize(24);
+
+        SimpleFastPointOverlayOptions opt = SimpleFastPointOverlayOptions.getDefaultStyle()
+                .setAlgorithm(SimpleFastPointOverlayOptions.RenderingAlgorithm.MEDIUM_OPTIMIZATION)
+                .setRadius(7).setIsClickable(false).setCellSize(15).setTextStyle(textStyle);
+
+        final SimpleFastPointOverlay sfpo = new SimpleFastPointOverlay(pt, opt);
+
+        mapView.getOverlays().add(sfpo);
     }
 }

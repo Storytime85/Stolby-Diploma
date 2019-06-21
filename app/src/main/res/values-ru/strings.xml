@@ -33,6 +33,26 @@
     <string name="add">Добавить</string>
     <string name="copy">Копировать</string>
     <string name="show">Показать</string>
-    <string name="full_list">Ваш список друзей полон. Вы не можете добавить еще.</string>
+    <string name="full_list">Ваш список друзей полон. Вы не можете добавить еще</string>
     <string name="refresh">Обновить</string>
+    <string name="duplicate_friend">Владелец этого ключа уже является вашим другом</string>
+    <string name="delete">Удалить</string>
+
+    <string name="confirm">Подтвердите действие</string>
+    <string name="are_you_sure">Вы действительно хотите выйти из учетной записи?</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
+
+    <string name="friend_deleted">Друг удален</string>
+    <string name="exception">Ошибка</string>
+    <string name="already_a_member">Уже зарегестрированы? Войти</string>
+    <string name="create_account">Создать аккаунт</string>
+    <string name="email">E-mail</string>
+    <string name="name">Имя</string>
+    <string name="no_account">Нет аккаунта? Создайте</string>
+    <string name="password">Пароль</string>
+    <string name="at_least">Минимум 3 знака</string>
+    <string name="between_characters">От 4 до 10 знаков</string>
+    <string name="invalid_email">Введен неверный e-mail</string>
+    <string name="signup_failed">Ошибка</string>
 </resources>

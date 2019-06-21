@@ -20,6 +20,7 @@ public class User {
 
     }
 
+    //region getters/setters
     public List<Friend> getFriends() {
         return friends;
     }
@@ -59,6 +60,6 @@ public class User {
     public void setFriendCount(int friendCount) {
         this.friendCount = friendCount;
     }
-
+    //endregion
 
 }

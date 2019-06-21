@@ -13,6 +13,7 @@ public class Pillar {
         this.image = image;
     }
 
+    //region getters/setters
     public String getImage() {
         return image;
     }
@@ -44,4 +45,5 @@ public class Pillar {
     public void setDescriptions(String[] descriptions) {
         this.descriptions = descriptions;
     }
+    //endregion
 }

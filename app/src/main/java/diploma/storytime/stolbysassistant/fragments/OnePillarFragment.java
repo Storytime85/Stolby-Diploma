@@ -21,13 +21,11 @@ import diploma.storytime.stolbysassistant.utils.maputils.Pillar;
 import diploma.storytime.stolbysassistant.views.MainActivity;
 
 public class OnePillarFragment extends Fragment {
-
     private MainActivity activity;
-    private ArrayList<Pillar> pillars;
 
+    private ArrayList<Pillar> pillars;
     private TextView pillarTitle, pillarSubtitle, pillarText;
     private ImageView pillarImage;
-
     private int id;
 
     public OnePillarFragment(int id) {
@@ -37,7 +35,6 @@ public class OnePillarFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.content_one_pillar, container, false);
     }
 
@@ -71,15 +68,12 @@ public class OnePillarFragment extends Fragment {
         pillarTitle.setText(temp.getNames()[i]);
         pillarSubtitle.setText(coordinatesToString(temp.getCoordinates()));
         pillarText.setText(temp.getDescriptions()[i]);
+        //TODO: DEPRECATED
         if (!temp.getImage().equals("")) {
             final int resourceId = resources.getIdentifier(temp.getImage(), "drawable", activity.getPackageName());
-
-            // get drawable by resource id
             Drawable drawable = resources.getDrawable(resourceId);
             pillarImage.setImageDrawable(drawable);
         }
-        // get bitmap by resource id
-        //Bitmap bitmap = BitmapFactory.decodeResource(activity.getResources(), resourceId);
     }
 
     private String coordinatesToString(double[] coordinates) {

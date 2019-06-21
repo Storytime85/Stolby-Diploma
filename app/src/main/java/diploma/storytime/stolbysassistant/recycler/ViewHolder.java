@@ -10,10 +10,10 @@ import diploma.storytime.stolbysassistant.R;
 
 public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-    TextView titleTextView;
-    TextView descriptionTextView;
-    ImageView imageView;
-    ImageView newIconImageView;
+    public TextView titleTextView;
+    public TextView descriptionTextView;
+    public ImageView imageView;
+    public ImageView newIconImageView;
 
     private RecyclerViewListener clickListener;
 

@@ -1,8 +1,6 @@
 package diploma.storytime.stolbysassistant.fragments;
 
-import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,34 +13,22 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import org.json.simple.JSONObject;
+
 import diploma.storytime.stolbysassistant.R;
 import diploma.storytime.stolbysassistant.utils.FragmentChanger;
 import diploma.storytime.stolbysassistant.utils.HTTPRequest;
+import diploma.storytime.stolbysassistant.utils.PasswordUtils;
+import diploma.storytime.stolbysassistant.utils.User;
 import diploma.storytime.stolbysassistant.views.MainActivity;
-
-import static android.app.Activity.RESULT_OK;
-
-//import diploma.storytime.stolbysassistant.utils.UserChanger;
-
-//import butterknife.BindView;
-//import butterknife.ButterKnife;
 
 public class LoginFragment extends Fragment {
     private MainActivity activity;
-    private static final int REQUEST_SIGNUP = 0;
 
-    //@BindView(R.id.input_email)
-    EditText emailText;
-
-    //@BindView(R.id.input_password)
-    EditText passwordText;
-
-    //@BindView(R.id.btn_login)
-    Button loginButton;
-
-    //@BindView(R.id.link_signup)
-    TextView signupLink;
-
+    private EditText emailText;
+    private EditText passwordText;
+    private Button loginButton;
+    private TextView signupLink;
 
     @Override
     public void onAttach(Context context) {
@@ -58,7 +44,7 @@ public class LoginFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //ButterKnife.bind(activity);
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -71,7 +57,6 @@ public class LoginFragment extends Fragment {
         loginButton.setOnClickListener(v -> login());
 
         signupLink.setOnClickListener(v -> {
-            // Start the Signup activity
             FragmentChanger.changeFragment(new SignupFragment(), activity);
         });
     }
@@ -84,42 +69,32 @@ public class LoginFragment extends Fragment {
 
         loginButton.setEnabled(false);
 
-        final ProgressDialog progressDialog = new ProgressDialog(activity);
-        progressDialog.setIndeterminate(true);
-        progressDialog.setMessage("Authenticating...");
-        progressDialog.show();
-
         String email = emailText.getText().toString();
         String password = passwordText.getText().toString();
 
-        new android.os.Handler().postDelayed(
-                () -> {
-                    // On complete call either onLoginSuccess or onLoginFailed
-                    onLoginSuccess();
-                    // onLoginFailed();
-                    progressDialog.dismiss();
-                }, 3000);
-        HTTPRequest.login(activity, email, password);
-    }
+        JSONObject respond = HTTPRequest.login(email);
 
+        if (respond != null) {
+            String emailString = (String) respond.get("email");
+            String nameString = (String) respond.get("name");
+            String friends = (String) respond.get("count");
+            String salt = (String) respond.get("salt");
+            String encryptedPassword = (String) respond.get("password");
+            String friendKey = (String) respond.get("friendKey");
+            if (PasswordUtils.verifyUserPassword(password, encryptedPassword, salt)) {
+                activity.setUser(new User(nameString, emailString, Integer.parseInt(friends), friendKey));
+                activity.setUserInfo();
+                activity.setMenuState(false);
+                activity.invalidateOptionsMenu();
+                FragmentChanger.changeFragment(new MainFragment(), activity);
+                Toast.makeText(activity, R.string.success_login, Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(activity, R.string.failed_login, Toast.LENGTH_LONG).show();
 
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_SIGNUP) {
-            if (resultCode == RESULT_OK) {
-
-                // TODO: Implement successful signup logic here
-                // By default we just finish the Activity and log them in automatically
-                // activity.finish();
             }
+        } else {
+            Toast.makeText(activity, R.string.failed_login, Toast.LENGTH_LONG).show();
         }
-    }
-
-
-    private void onLoginSuccess() {
-        loginButton.setEnabled(true);
-        //activity.finish();
     }
 
     private void onLoginFailed() {
@@ -135,14 +110,14 @@ public class LoginFragment extends Fragment {
         String password = passwordText.getText().toString();
 
         if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            emailText.setError("enter a valid email address");
+            emailText.setError(getString(R.string.invalid_email));
             valid = false;
         } else {
             emailText.setError(null);
         }
 
         if (password.isEmpty() || password.length() < 4 || password.length() > 10) {
-            passwordText.setError("between 4 and 10 alphanumeric characters");
+            passwordText.setError(getString(R.string.between_characters));
             valid = false;
         } else {
             passwordText.setError(null);

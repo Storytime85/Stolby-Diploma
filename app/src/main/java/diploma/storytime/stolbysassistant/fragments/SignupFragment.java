@@ -1,6 +1,5 @@
 package diploma.storytime.stolbysassistant.fragments;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -20,26 +19,14 @@ import diploma.storytime.stolbysassistant.utils.HTTPRequest;
 import diploma.storytime.stolbysassistant.utils.PasswordUtils;
 import diploma.storytime.stolbysassistant.views.MainActivity;
 
-import static android.app.Activity.RESULT_OK;
-
 public class SignupFragment extends Fragment {
-    private static final String TAG = "SignupActivity";
     private MainActivity activity;
 
-    //@BindView(R.id.input_name)
-    EditText nameText;
-
-    //@BindView(R.id.input_email)
-    EditText emailText;
-
-    //@BindView(R.id.input_password)
-    EditText passwordText;
-
-    //@BindView(R.id.btn_signup)
-    Button signupButton;
-
-    //@BindView(R.id.link_login)
-    TextView loginLink;
+    private EditText nameText;
+    private EditText emailText;
+    private EditText passwordText;
+    private Button signupButton;
+    private TextView loginLink;
 
     @Override
     public void onAttach(Context context) {
@@ -55,8 +42,6 @@ public class SignupFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        //ButterKnife.bind(activity);
     }
 
     @Override
@@ -83,38 +68,23 @@ public class SignupFragment extends Fragment {
 
         signupButton.setEnabled(false);
 
-        final ProgressDialog progressDialog = new ProgressDialog(activity);
-        progressDialog.setIndeterminate(true);
-        progressDialog.setMessage("Creating Account...");
-        progressDialog.show();
-
         String name = nameText.getText().toString();
         String email = emailText.getText().toString();
         String password = passwordText.getText().toString();
 
         String salt = PasswordUtils.getSalt(30);
         String securedPassword = PasswordUtils.generateSecurePassword(password, salt);
-        HTTPRequest.signup(activity, name, email, securedPassword, salt);
-        new android.os.Handler().postDelayed(
-                () -> {
-                    // On complete call either onSignupSuccess or onSignupFailed
-                    // depending on success
-                    onSignupSuccess();
-                    // onSignupFailed();
-                    progressDialog.dismiss();
-                }, 3000);
-    }
-
-
-    private void onSignupSuccess() {
-        signupButton.setEnabled(true);
-        activity.setResult(RESULT_OK, null);
-        //activity.finish();
+        boolean respond = HTTPRequest.signup(name, email, securedPassword, salt);
+        if (respond) {
+            Toast.makeText(activity, R.string.success_registration, Toast.LENGTH_LONG).show();
+            FragmentChanger.changeFragment(new LoginFragment(), activity);
+        } else {
+            Toast.makeText(activity, R.string.failed_registration, Toast.LENGTH_LONG).show();
+        }
     }
 
     private void onSignupFailed() {
-        Toast.makeText(activity.getBaseContext(), "Login failed", Toast.LENGTH_LONG).show();
-
+        Toast.makeText(activity.getBaseContext(), R.string.signup_failed, Toast.LENGTH_LONG).show();
         signupButton.setEnabled(true);
     }
 
@@ -126,21 +96,21 @@ public class SignupFragment extends Fragment {
         String password = passwordText.getText().toString();
 
         if (name.isEmpty() || name.length() < 3) {
-            nameText.setError("at least 3 characters");
+            nameText.setError(getString(R.string.at_least));
             valid = false;
         } else {
             nameText.setError(null);
         }
 
         if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            emailText.setError("enter a valid email address");
+            emailText.setError(getString(R.string.invalid_email));
             valid = false;
         } else {
             emailText.setError(null);
         }
 
         if (password.isEmpty() || password.length() < 4 || password.length() > 10) {
-            passwordText.setError("between 4 and 10 alphanumeric characters");
+            passwordText.setError(getString(R.string.between_characters));
             valid = false;
         } else {
             passwordText.setError(null);

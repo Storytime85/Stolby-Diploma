@@ -22,6 +22,7 @@ import diploma.storytime.stolbysassistant.utils.maputils.AlpineHat;
 import diploma.storytime.stolbysassistant.utils.maputils.Pillar;
 
 public class ReadJSON {
+
     static public ArrayList<GeoPoint> readCoordinates(@NonNull Context context, int resId)
             throws IOException, ParseException {
         InputStream is = context.getResources().openRawResource(resId);
@@ -36,7 +37,7 @@ public class ReadJSON {
         return result;
     }
 
-    private static GeoPoint parseCoordinatesObject(@NonNull JSONObject object) {
+    static private GeoPoint parseCoordinatesObject(@NonNull JSONObject object) {
         JSONArray solution = (JSONArray) object.get("coordinates");
         double[] array = new double[2];
         if (solution == null) {
@@ -63,11 +64,10 @@ public class ReadJSON {
         return result;
     }
 
-    private static Pillar parsePillarObject(JSONObject obj) {
+    static private Pillar parsePillarObject(JSONObject obj) {
         double[] coordinates = new double[2];
         String[] names = new String[4];
         String[] descriptions = new String[4];
-        //String image;
         JSONArray jsonNames = (JSONArray) obj.get("name");
         JSONArray jsonDescriptions = (JSONArray) obj.get("description");
         JSONArray jsonCoordinates = (JSONArray) obj.get("coordinates");
@@ -78,7 +78,6 @@ public class ReadJSON {
         Iterator itNames = jsonNames.iterator();
         Iterator itDescriptions = jsonDescriptions.iterator();
         Iterator itCoordinates = jsonCoordinates.iterator();
-        //Iterator itImages = jsonImages.iterator();
         for (int i = 0; i < 2; i++) {
             coordinates[i] = (Double) itCoordinates.next();
         }
@@ -86,7 +85,6 @@ public class ReadJSON {
             names[i] = (String) itNames.next();
             descriptions[i] = (String) itDescriptions.next();
         }
-        //image = (String)itImages.next();
         return new Pillar(coordinates, names, descriptions, image);
     }
 
@@ -105,7 +103,7 @@ public class ReadJSON {
         return result;
     }
 
-    private static Polyline parseRailroad(JSONObject obj) {
+    static private Polyline parseRailroad(JSONObject obj) {
         double[] start = new double[2];
         double[] end = new double[2];
         JSONArray jsonStart = (JSONArray) obj.get("start");
@@ -141,7 +139,7 @@ public class ReadJSON {
         return result;
     }
 
-    private static AlpineHat parseMisc(JSONObject obj) {
+    static private AlpineHat parseMisc(JSONObject obj) {
         double[] coordinates = new double[2];
         String[] names = new String[4];
         JSONArray jsonCoords = (JSONArray) obj.get("coordinates");
@@ -157,5 +155,34 @@ public class ReadJSON {
             names[i] = (String) itNames.next();
         }
         return new AlpineHat(coordinates, names);
+    }
+
+    static public ArrayList<Friend> readFriends(JSONArray array) {
+        ArrayList<Friend> result = new ArrayList<>();
+        for (Object obj : array) {
+            result.add(parseFriendObject((JSONObject) obj));
+        }
+        return result;
+    }
+
+    static private Friend parseFriendObject(JSONObject obj) {
+        String name = (String) obj.get("friendName");
+        String online = (String) obj.get("online");
+        String latitude = null;
+        String longitude = null;
+        try {
+            latitude = (String) obj.get("lastLatitude");
+            longitude = (String) obj.get("lastLongitude");
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
+        boolean f;
+        f = Integer.parseInt(online) != 0;
+        Friend friend = new Friend(name, f);
+        if (!(latitude == null) && !(longitude == null)) {
+            friend.setLatitude(Double.parseDouble(latitude));
+            friend.setLongitude(Double.parseDouble(longitude));
+        }
+        return friend;
     }
 }
